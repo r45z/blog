@@ -1,0 +1,7 @@
+flask==3.0.0
+duckdb
+markdown==3.5.2
+werkzeug==3.0.1
+gunicorn==21.2.0
+click==8.1.7
+Pygments==2.19.1 

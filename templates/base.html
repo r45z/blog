@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ blog_name }}{% endblock %}</title>
+    <meta name="description" content="{{ blog_description }}">
+    <meta name="keywords" content="{{ meta_keywords }}">
+    <meta name="author" content="{{ meta_author }}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/aqp4xxn.css">
+    <link href="{{ url_for('static', filename='markdown.css') }}" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: {{ background_color }};
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: #e5e7eb;
+            font-family: 'futura-pt', 'Futura', 'Century Gothic', Optima, sans-serif;
+            font-weight: 300;
+            line-height: 1.7;
+            letter-spacing: 0.01em;
+            font-size: 1rem;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            color: #f9fafb;
+            font-family: 'futura-pt', 'Futura', 'Century Gothic', Optima, sans-serif;
+        }
+        
+        a {
+            color: #9ca3af;
+            text-decoration: none;
+            border-bottom: 1px solid #374151;
+            transition: border-color 0.3s ease, color 0.3s ease;
+        }
+        
+        a:hover {
+            color: #f9fafb;
+            border-color: #4b5563;
+        }
+        
+        .nav-link {
+            border-bottom: none;
+            color: #9ca3af;
+            font-weight: 400;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .nav-link:hover {
+            color: #f9fafb;
+        }
+        
+        .nav-link.active {
+            color: #f9fafb;
+        }
+        
+        .logo-img {
+            max-width: 100px;
+            height: auto;
+            border-radius: 0;
+            transition: transform 0.3s ease;
+            background: transparent;
+        }
+        
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen">
+    <header class="py-16">
+        <div class="max-w-2xl mx-auto px-6 text-center">
+            <div class="flex flex-col items-center space-y-8">
+                <a href="/" class="border-none">
+                    <img src="{{ url_for('static', filename='gengar.gif') }}" alt="Gengar Logo" class="logo-img">
+                </a>
+                <nav>
+                    <ul class="flex space-x-10 justify-center">
+                        <li><a href="/" class="nav-link font-bold">Posts</a></li>
+                        <li><a href="/about" class="nav-link font-bold">About</a></li>
+                        <li><a href="/newsletter" class="nav-link font-bold">Newsletter</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-6 py-12">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="py-12">
+        <div class="max-w-2xl mx-auto px-6 text-center">
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html> 

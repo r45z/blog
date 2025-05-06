@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ blog_name }} | Error{% endblock %}
+
+{% block content %}
+<section>
+    <h1 class="text-xl tracking-wide mb-16 font-normal text-gray-100">Error</h1>
+    
+    <div class="bg-gray-800 p-8 mb-16">
+        <h2 class="text-lg font-normal mb-6 text-gray-100">Something went wrong</h2>
+        <p class="text-gray-400 mb-8">The server encountered an error and could not complete your request.</p>
+        {% if error %}
+        <div class="bg-gray-900 p-6 overflow-auto font-mono text-sm text-gray-400">
+            <code>{{ error }}</code>
+        </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <a href="/" class="px-4 py-2 bg-gray-700 text-gray-100 text-sm hover:bg-gray-600 transition duration-300 inline-block">
+            Return to Home
+        </a>
+    </div>
+</section>
+{% endblock %} 

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ blog_name }} | About{% endblock %}
+
+{% block content %}
+<section>
+    <div class="prose max-w-none leading-relaxed">
+        {{ content|safe }}
+    </div>
+    
+    {% if image_path %}
+    <div class="mt-20">
+        <img src="{{ image_path }}" alt="Author" class="max-w-sm mx-auto">
+    </div>
+    {% endif %}
+</section>
+{% endblock %} 
