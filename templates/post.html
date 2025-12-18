@@ -3,18 +3,17 @@
 {% block title %}{{ post.title }} | {{ blog_name }}{% endblock %}
 
 {% block content %}
-<article class="post-single">
-    <div class="post-content prose max-w-none leading-relaxed">
+<article class="post-single px-4 sm:px-6 mx-auto text-center">
+    <!-- Post content with better spacing and typography -->
+    <div class="post-content prose max-w-none">
         {{ post.content|safe }}
     </div>
     
-    <div class="mt-24 pt-12 border-t border-gray-800">
-        <div class="flex justify-between items-center mb-8">
-            <a href="/" class="text-sm text-gray-400 hover:text-gray-100 transition-colors duration-300">
-                ← Back to all posts
-            </a>
-            <p class="text-gray-400 text-sm">{{ post.date }}</p>
-        </div>
+    <!-- Footer navigation -->
+    <div class="mt-10 md:mt-16 pt-6 md:pt-8 border-t border-gray-700 text-center">
+        <a href="/" class="inline-block py-2 px-4 bg-gray-800 rounded-md hover:bg-gray-700 transition-colors duration-300 no-underline text-gray-300 text-sm md:text-base">
+            ← Back to all posts
+        </a>
     </div>
 </article>
 {% endblock %} 

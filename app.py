@@ -6,7 +6,7 @@ This is the main Flask application file for the Core Blog system.
 import os
 import logging
 from datetime import datetime
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 from utils.db import init_db, init_app as init_db_app
 from utils.scheduler import init_scheduler
 import config
@@ -21,11 +21,16 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     
     # Load default configuration
+    # Use data/ directory for database (consistent with standalone scripts)
+    base_dir = os.path.dirname(__file__)
+    data_dir = os.path.join(base_dir, config.DATA_DIRECTORY)
+    
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, config.DB_FILENAME),
-        POSTS_DIR=os.path.join(os.path.dirname(__file__), config.POSTS_DIRECTORY),
-        POSTS_PER_PAGE=config.POSTS_PER_PAGE
+        DATABASE=os.path.join(data_dir, config.DB_FILENAME),
+        POSTS_DIR=os.path.join(base_dir, config.POSTS_DIRECTORY),
+        POSTS_PER_PAGE=config.POSTS_PER_PAGE,
+        STATIC_DIR=os.path.join(base_dir, 'static')
     )
 
     if test_config is None:
@@ -41,6 +46,14 @@ def create_app(test_config=None):
     except OSError:
         pass
     
+    # Ensure static directories exist
+    static_dir = app.config['STATIC_DIR']
+    images_dir = os.path.join(static_dir, 'images')
+    for directory in [static_dir, images_dir]:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            logger.info(f"Created directory: {directory}")
+    
     # Register the database functions
     init_db_app(app)
     
@@ -53,6 +66,12 @@ def create_app(test_config=None):
     if not os.path.exists(posts_dir):
         os.makedirs(posts_dir)
 
+    # Static file route for images
+    @app.route('/static/<path:filename>')
+    def static_files(filename):
+        """Serve static files"""
+        return send_from_directory(app.config['STATIC_DIR'], filename)
+
     # Register template context processor
     @app.context_processor
     def inject_config():
@@ -63,8 +82,21 @@ def create_app(test_config=None):
             'blog_description': config.BLOG_DESCRIPTION,
             'meta_keywords': config.META_KEYWORDS,
             'meta_author': config.META_AUTHOR,
-            'github_url': config.GITHUB_URL,
+            'instagram_handle': config.INSTAGRAM_HANDLE,
+            'instagram_url': config.INSTAGRAM_URL,
             'background_color': config.BACKGROUND_COLOR,
+            'text_color': config.TEXT_COLOR,
+            'secondary_text_color': config.SECONDARY_TEXT_COLOR,
+            'accent_color': config.ACCENT_COLOR,
+            'body_font': config.BODY_FONT,
+            'heading_font': config.HEADING_FONT,
+            'body_font_weight': config.BODY_FONT_WEIGHT,
+            'heading_font_weight': config.HEADING_FONT_WEIGHT,
+            'body_font_size': config.BODY_FONT_SIZE,
+            'body_line_height': config.BODY_LINE_HEIGHT,
+            'body_letter_spacing': config.BODY_LETTER_SPACING,
+            'heading_letter_spacing': config.HEADING_LETTER_SPACING,
+            'content_max_width': config.CONTENT_MAX_WIDTH,
             'now': datetime.now()
         }
 

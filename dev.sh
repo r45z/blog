@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Development startup script for Gengar's Blog
+# Development startup script for CoreBlog
 # This script runs the application in development mode with hot-reloading
 
 set -e  # Exit immediately if a command exits with a non-zero status
 
 echo "--------------------------------------------"
-echo "Starting Gengar's Blog - DEVELOPMENT MODE"
+echo "Starting CoreBlog - DEVELOPMENT MODE"
 echo "$(date)"
 echo "--------------------------------------------"
 
@@ -28,14 +28,6 @@ if [ ! -d "data" ]; then
     mkdir -p data
 fi
 
-# Ensure database is properly initialized
-echo "Running diagnostic check..."
-python debug_blog.py || { echo "WARNING: Diagnostic check had issues, but continuing..."; }
-
-# Check if posts are properly formatted
-echo "Verifying post files..."
-python verify_posts.py || { echo "WARNING: Post verification had issues"; }
-
 # Run Flask development server
 echo "Starting development server with debug mode enabled..."
 export FLASK_APP=app:create_app
@@ -44,6 +36,6 @@ export FLASK_DEBUG=1
 export PYTHONDONTWRITEBYTECODE=1  # Don't create .pyc files
 
 # Start the Flask development server
-echo "Visit http://localhost:5000 in your browser"
+echo "Visit http://localhost:5001 in your browser"
 echo "Press CTRL+C to stop the server"
-flask run --host=0.0.0.0 --port=5000 
+flask run --host=0.0.0.0 --port=5043

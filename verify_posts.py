@@ -1,92 +1,82 @@
 #!/usr/bin/env python3
-
 """
-Script to verify post files and ensure they're properly formatted.
-Run this script to check if your blog posts are correctly formatted for the CoreBlog system.
+Script to verify post files are properly formatted.
+Usage: python verify_posts.py [posts_directory]
 """
-
 import os
 import sys
 import logging
-from utils.markdown_parser import read_markdown_file, render_markdown, get_posts_dir
+from utils.markdown_parser import read_markdown_file, render_markdown, extract_metadata
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger("post_verifier")
+logger = logging.getLogger(__name__)
 
-def verify_post(file_path):
+DEFAULT_POSTS_DIR = "posts"
+
+
+def verify_post(file_path: str) -> bool:
     """Verify a post file's content and format"""
-    logger.info(f"Verifying post: {file_path}")
+    logger.info(f"Verifying: {file_path}")
     
-    # Check if file exists
     if not os.path.exists(file_path):
         logger.error(f"File does not exist: {file_path}")
         return False
     
-    # Read the file content
     content = read_markdown_file(file_path)
     if not content:
-        logger.error(f"Failed to read or empty file: {file_path}")
+        logger.error(f"Empty or unreadable: {file_path}")
         return False
     
-    # Check if content starts with a title (# Title)
-    lines = content.splitlines()
-    if not lines or not lines[0].startswith('# '):
-        logger.error(f"File does not start with a level 1 heading (# Title): {file_path}")
+    # Check for title heading
+    metadata = extract_metadata(content, file_path)
+    if not metadata['title']:
+        logger.error(f"No title (# heading) found: {file_path}")
         return False
     
-    # Try rendering the markdown
+    # Try rendering
     try:
         html = render_markdown(content)
         if not html:
-            logger.error(f"Failed to render markdown to HTML: {file_path}")
+            logger.error(f"Failed to render: {file_path}")
             return False
     except Exception as e:
-        logger.error(f"Error rendering markdown: {e}")
+        logger.error(f"Render error in {file_path}: {e}")
         return False
     
-    logger.info(f"Post verified successfully: {file_path}")
+    logger.info(f"OK: {metadata['title']}")
     return True
 
-def verify_all_posts(posts_dir=None):
-    """Verify all markdown files in the posts directory"""
-    if posts_dir is None:
-        posts_dir = get_posts_dir()
-        
-    logger.info(f"Verifying all posts in directory: {posts_dir}")
+
+def main():
+    """Verify all markdown files in posts directory"""
+    posts_dir = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_POSTS_DIR
     
-    # Check if directory exists
     if not os.path.exists(posts_dir):
-        logger.error(f"Posts directory does not exist: {posts_dir}")
-        return False
+        logger.error(f"Directory not found: {posts_dir}")
+        return 1
     
-    # Get all markdown files
-    markdown_files = [f for f in os.listdir(posts_dir) if f.endswith('.md')]
-    logger.info(f"Found {len(markdown_files)} markdown files")
+    md_files = [f for f in os.listdir(posts_dir) if f.endswith('.md')]
+    if not md_files:
+        logger.warning("No markdown files found")
+        return 1
     
-    if not markdown_files:
-        logger.warning("No markdown files found in the posts directory")
-        return False
+    logger.info(f"Found {len(md_files)} markdown files")
     
-    # Verify each file
-    success = True
-    for filename in markdown_files:
-        file_path = os.path.join(posts_dir, filename)
-        if not verify_post(file_path):
-            success = False
+    failed = []
+    for filename in md_files:
+        if not verify_post(os.path.join(posts_dir, filename)):
+            failed.append(filename)
     
-    return success
+    if failed:
+        logger.error(f"Failed: {', '.join(failed)}")
+        return 1
+    
+    logger.info("All posts verified successfully")
+    return 0
+
 
 if __name__ == "__main__":
-    # Get posts directory from command line argument or use default
-    posts_dir = sys.argv[1] if len(sys.argv) > 1 else None
-    
-    if verify_all_posts(posts_dir):
-        logger.info("All posts verified successfully!")
-        sys.exit(0)
-    else:
-        logger.error("Some posts failed verification")
-        sys.exit(1) 
+    sys.exit(main())

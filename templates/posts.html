@@ -3,31 +3,31 @@
 {% block title %}{{ blog_name }} | Posts{% endblock %}
 
 {% block content %}
-<section>
-    <div id="posts-container" class="space-y-8">
+<section class="px-4 sm:px-6 text-center mx-auto max-w-2xl">
+    <div id="posts-container" class="space-y-2 mx-auto">
         {% for post in posts %}
-        <article class="post-item pb-8">
-            <h2 class="text-xl font-normal mb-2">
-                <a href="/post/{{ post.file|replace('.md', '') }}" class="hover:text-gray-100 transition-colors duration-300">
+        <article class="post-item py-1 mx-auto">
+            <div class="flex justify-between items-center text-sm">
+                <a href="/post/{{ post.file|replace('.md', '') }}" class="hover:text-blue-400 transition-colors duration-300 flex-1 truncate">
                     {{ post.title }}
                 </a>
-            </h2>
-            <p class="text-gray-400 text-sm">{{ post.date }}</p>
+                <span class="text-gray-400 ml-4 text-xs">{{ post.date }}</span>
+            </div>
         </article>
         {% endfor %}
     </div>
     
-    <div id="loading-indicator" class="hidden text-center py-8 text-gray-400 text-sm">
+    <div id="loading-indicator" class="hidden text-center py-4 text-gray-500 text-xs">
         <p>Loading more posts...</p>
     </div>
     
-    <div id="end-of-posts" class="hidden text-center py-8 text-gray-400 text-sm">
+    <div id="end-of-posts" class="hidden text-center py-4 text-gray-500 text-xs">
         <p>You've reached the end of all posts.</p>
     </div>
 </section>
 {% endblock %}
 
-{% block extra_scripts %}
+{% block scripts %}
 <script>
     // Store the current offset for pagination
     let currentOffset = parseInt("{{ posts|length }}");
@@ -67,18 +67,18 @@
                 
                 data.posts.forEach(post => {
                     const postElement = document.createElement('article');
-                    postElement.className = 'post-item pb-8';
+                    postElement.className = 'post-item py-1 mx-auto';
                     
                     // Extract filename from post's file field
                     const postSlug = post.file ? post.file.replace('.md', '') : post.title.toLowerCase().replace(/\s+/g, '-');
                     
                     postElement.innerHTML = `
-                        <h2 class="text-xl font-normal mb-2">
-                            <a href="/post/${postSlug}" class="hover:text-gray-100 transition-colors duration-300">
+                        <div class="flex justify-between items-center text-sm">
+                            <a href="/post/${postSlug}" class="hover:text-blue-400 transition-colors duration-300 flex-1 truncate">
                                 ${post.title}
                             </a>
-                        </h2>
-                        <p class="text-gray-400 text-sm">${post.date}</p>
+                            <span class="text-gray-400 ml-4 text-xs">${post.date}</span>
+                        </div>
                     `;
                     postsContainer.appendChild(postElement);
                 });
