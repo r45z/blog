@@ -55,5 +55,8 @@ logs/
 
 # Posts content
 posts/*.md
-# Keep the posts directory structure with .gitkeep
-!posts/.gitkeep 
+!posts/.gitkeep
+
+# User images (keep only code, not content)
+static/images/*
+!static/images/.gitkeep
