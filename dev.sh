@@ -36,6 +36,6 @@ export FLASK_DEBUG=1
 export PYTHONDONTWRITEBYTECODE=1  # Don't create .pyc files
 
 # Start the Flask development server
-echo "Visit http://localhost:5001 in your browser"
+echo "Visit http://localhost:5043 in your browser"
 echo "Press CTRL+C to stop the server"
 flask run --host=0.0.0.0 --port=5043
