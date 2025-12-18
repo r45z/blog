@@ -29,14 +29,13 @@ ENV/
 instance/
 .webassets-cache
 
-# DuckDB
 *.db
 data/*.db
-# Keep the data directory structure with .gitkeep
 !data/.gitkeep
 
 # IDEs and editors
 .idea/
+.cursor/
 .vscode/
 *.swp
 *.swo
@@ -57,6 +56,6 @@ logs/
 posts/*.md
 !posts/.gitkeep
 
-# User images (keep only code, not content)
+#  images 
 static/images/*
 !static/images/.gitkeep
