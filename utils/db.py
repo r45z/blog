@@ -2,11 +2,12 @@
 import sqlite3
 import os
 import click
-from flask import current_app, g
+from flask import Flask, current_app, g
 from flask.cli import with_appcontext
 
 
-def get_db():
+def get_db() -> sqlite3.Connection:
+    """Get database connection from Flask g object"""
     if 'db' not in g:
         db_path = current_app.config['DATABASE']
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
@@ -15,13 +16,15 @@ def get_db():
     return g.db
 
 
-def close_db(e=None):
+def close_db(e: Exception | None = None) -> None:
+    """Close database connection"""
     db = g.pop('db', None)
     if db:
         db.close()
 
 
-def init_db():
+def init_db() -> None:
+    """Initialize database schema"""
     db = get_db()
     db.execute("""
         CREATE TABLE IF NOT EXISTS posts (
@@ -36,11 +39,13 @@ def init_db():
 
 @click.command('init-db')
 @with_appcontext
-def init_db_command():
+def init_db_command() -> None:
+    """CLI command to initialize database"""
     init_db()
     click.echo('Initialized the database.')
 
 
-def init_app(app):
+def init_app(app: Flask) -> None:
+    """Register database functions with Flask app"""
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)

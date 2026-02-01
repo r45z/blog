@@ -3,6 +3,7 @@ import os
 import logging
 from datetime import datetime
 from flask import Flask, render_template, send_from_directory
+from werkzeug.wrappers import Response
 from utils.db import init_db, init_app as init_db_app
 from utils.scheduler import init_scheduler
 import config
@@ -13,7 +14,7 @@ logging.getLogger('apscheduler').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-def create_app(test_config=None):
+def create_app(test_config: dict | None = None) -> Flask:
     """Application factory"""
     app = Flask(__name__, instance_relative_config=True)
     
@@ -21,7 +22,7 @@ def create_app(test_config=None):
     data_dir = os.path.join(base_dir, config.DATA_DIRECTORY)
     
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
         DATABASE=os.path.join(data_dir, config.DB_FILENAME),
         POSTS_DIR=os.path.join(base_dir, config.POSTS_DIRECTORY),
         POSTS_PER_PAGE=config.POSTS_PER_PAGE,
@@ -45,11 +46,11 @@ def create_app(test_config=None):
         init_db()
 
     @app.route('/static/<path:filename>')
-    def static_files(filename):
+    def static_files(filename: str) -> Response:
         return send_from_directory(app.config['STATIC_DIR'], filename)
 
     @app.context_processor
-    def inject_config():
+    def inject_config() -> dict:
         return {
             'blog_name': config.BLOG_NAME,
             'blog_tagline': config.BLOG_TAGLINE,
@@ -75,15 +76,15 @@ def create_app(test_config=None):
         }
 
     @app.errorhandler(404)
-    def page_not_found(e):
+    def page_not_found(e: Exception) -> tuple[str, int]:
         return render_template('error.html', error="Page not found", status_code=404), 404
         
     @app.errorhandler(500)
-    def internal_server_error(e):
+    def internal_server_error(e: Exception) -> tuple[str, int]:
         return render_template('error.html', error=str(e)), 500
     
-    from routes import register_routes
-    register_routes(app)
+    from routes import register_blueprints
+    register_blueprints(app)
     
     init_scheduler(app)
     

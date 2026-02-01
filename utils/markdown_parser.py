@@ -9,10 +9,10 @@ from flask import current_app
 logger = logging.getLogger(__name__)
 
 
-def extract_metadata(content: str, filepath: str = None) -> dict:
+def extract_metadata(content: str, filepath: str | None = None) -> dict[str, str | None]:
     """Extract title and date from markdown content"""
-    title = None
-    date = None
+    title: str | None = None
+    date: str | None = None
     
     if not content:
         return {'title': title, 'date': date}
@@ -43,7 +43,7 @@ def read_markdown_file(file_path: str) -> str:
         return ""
 
 
-def render_markdown(content: str, post_slug: str = None) -> str:
+def render_markdown(content: str, post_slug: str | None = None) -> str:
     """Convert markdown to HTML"""
     try:
         processed = _process_image_paths(content)
@@ -64,11 +64,12 @@ def render_markdown(content: str, post_slug: str = None) -> str:
         return _add_responsive_image_classes(html)
     except Exception as e:
         logger.error(f"Error rendering markdown: {e}")
-        return f"<p>Error rendering content</p>"
+        return "<p>Error rendering content</p>"
 
 
 def _process_image_paths(content: str) -> str:
-    def replace_path(match):
+    """Convert relative image paths to static paths"""
+    def replace_path(match: re.Match) -> str:
         alt, path = match.group(1), match.group(2)
         if path.startswith('/static/') or path.startswith('http'):
             return f'![{alt}]({path})'
@@ -77,6 +78,7 @@ def _process_image_paths(content: str) -> str:
 
 
 def _validate_images_exist(content: str) -> None:
+    """Log warnings for missing images"""
     static_dir = current_app.config.get('STATIC_DIR', '')
     if not static_dir:
         return
@@ -87,7 +89,8 @@ def _validate_images_exist(content: str) -> None:
 
 
 def _add_responsive_image_classes(html: str) -> str:
-    def add_classes(match):
+    """Add responsive CSS classes to images"""
+    def add_classes(match: re.Match) -> str:
         attrs = match.group(1)
         if 'class=' in attrs:
             return re.sub(r'class="([^"]*)"', r'class="\1 max-w-full h-auto rounded-lg shadow-md"', f'<img{attrs}>')

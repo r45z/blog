@@ -1,6 +1,7 @@
 """Sync service - syncs posts from filesystem to database"""
 import os
 import logging
+from sqlite3 import Connection
 from flask import current_app
 from utils.db import get_db
 from utils.markdown_parser import read_markdown_file, extract_metadata
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 EXCLUDED_FILES = {'about.md'}
 
 
-def sync_posts_to_db(posts_dir: str = None) -> bool:
+def sync_posts_to_db(posts_dir: str | None = None) -> bool:
     """Sync markdown files to database"""
     try:
         if posts_dir is None:
@@ -37,7 +38,8 @@ def sync_posts_to_db(posts_dir: str = None) -> bool:
         return False
 
 
-def _add_or_update_post(filepath: str, filename: str, db, existing_row) -> bool:
+def _add_or_update_post(filepath: str, filename: str, db: Connection, existing_row: tuple | None) -> bool:
+    """Add new post or update existing one"""
     try:
         content = read_markdown_file(filepath)
         if not content:
@@ -60,7 +62,8 @@ def _add_or_update_post(filepath: str, filename: str, db, existing_row) -> bool:
         return False
 
 
-def _remove_deleted_posts(db, db_posts: dict, existing_files: set, posts_dir: str) -> None:
+def _remove_deleted_posts(db: Connection, db_posts: dict, existing_files: set, posts_dir: str) -> None:
+    """Remove posts from database that no longer exist on filesystem"""
     for filename, row in db_posts.items():
         if filename not in existing_files or not os.path.exists(os.path.join(posts_dir, filename)):
             db.execute("DELETE FROM posts WHERE id = ?", [row[0]])

@@ -4,16 +4,16 @@
 
 {% block content %}
 <article class="post-single px-4 sm:px-6 mx-auto text-center">
-    <!-- Post content with better spacing and typography -->
     <div class="post-content prose max-w-none">
         {{ post.content|safe }}
     </div>
     
-    <!-- Footer navigation -->
-    <div class="mt-10 md:mt-16 pt-6 md:pt-8 border-t border-gray-700 text-center">
-        <a href="/" class="inline-block py-2 px-4 bg-gray-800 rounded-md hover:bg-gray-700 transition-colors duration-300 no-underline text-gray-300 text-sm md:text-base">
+    <div class="divider my-10 md:my-16"></div>
+    
+    <div class="text-center">
+        <a href="/" class="btn btn-ghost btn-sm md:btn-md">
             ← Back to all posts
         </a>
     </div>
 </article>
-{% endblock %} 
+{% endblock %}
